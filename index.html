@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savings Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F4F6F1;
+    --paper: #FFFFFF;
+    --ink: #1E2A20;
+    --ink-soft: #5B6A5C;
+    --line: #E1E6DB;
+    --forest: #2F5233;
+    --forest-dark: #223D26;
+    --comfortable: #97D780;
+    --comfortable-ink: #1E4A1A;
+    --tight: #EFFC5F;
+    --tight-ink: #5C5A0F;
+    --risky: #E8574A;
+    --risky-ink: #FFF3F1;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .page{
+    max-width:520px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+  }
+
+  header.top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:28px;
+  }
+
+  h1.brand{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:26px;
+    letter-spacing:-0.01em;
+    margin:0;
+    color:var(--forest-dark);
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:22px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+
+  nav.tabs button{
+    background:none;
+    border:none;
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink-soft);
+    padding:0 2px 12px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+
+  nav.tabs button.active{
+    color:var(--forest-dark);
+    border-bottom-color:var(--forest-dark);
+  }
+
+  section{ display:none; }
+  section.active{ display:block; }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px;
+    margin-bottom:20px;
+  }
+
+  .field{ margin-bottom:20px; }
+  .field:last-child{ margin-bottom:0; }
+
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  .input-row{
+    display:flex;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:0 14px;
+    background:#FBFCFA;
+    transition:border-color .15s ease;
+  }
+
+  .input-row:focus-within{
+    border-color:var(--forest);
+  }
+
+  .input-row select{
+    border:none;
+    background:none;
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    padding:12px 4px 12px 0;
+    margin-right:2px;
+  }
+
+  .input-row input{
+    flex:1;
+    border:none;
+    background:none;
+    outline:none;
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    color:var(--ink);
+    padding:12px 0;
+    width:100%;
+    min-width:0;
+  }
+
+  .input-row span.suffix{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .calc-btn{
+    width:100%;
+    margin-top:6px;
+    background:var(--forest-dark);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:15px;
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+
+  .calc-btn:hover{ background:var(--forest); }
+  .calc-btn:active{ transform:scale(0.99); }
+
+  /* Result card */
+  .result{
+    display:none;
+  }
+  .result.show{ display:block; }
+
+  .result-status{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:700;
+    padding:6px 12px;
+    border-radius:100px;
+    margin-bottom:18px;
+  }
+
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    display:inline-block;
+  }
+
+  .result-figure{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:44px;
+    line-height:1.05;
+    color:var(--forest-dark);
+    margin:0 0 4px;
+  }
+
+  .result-caption{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:0 0 22px;
+  }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:20px;
+  }
+
+  .stat{
+    background:#FBFCFA;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+  }
+
+  .stat .stat-label{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+
+  .stat .stat-value{
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    font-weight:600;
+    color:var(--ink);
+  }
+
+  .result-message{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--ink);
+    padding:14px 16px;
+    border-radius:12px;
+    margin-bottom:18px;
+  }
+
+  .save-btn{
+    width:100%;
+    background:none;
+    border:1.5px solid var(--forest-dark);
+    color:var(--forest-dark);
+    border-radius:10px;
+    padding:13px;
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+
+  .save-btn:hover{ background:var(--forest-dark); color:#fff; }
+  .save-btn:disabled{ opacity:0.5; cursor:default; }
+  .save-btn:disabled:hover{ background:none; color:var(--forest-dark); }
+
+  /* History */
+  .history-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+
+  .history-header p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  .clear-btn{
+    background:none;
+    border:none;
+    color:var(--risky);
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    padding:4px;
+  }
+
+  .history-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .history-item{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .history-item .h-left .h-date{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+
+  .history-item .h-left .h-amount{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--ink);
+  }
+
+  .history-item .h-left .h-sub{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .history-item .h-tag{
+    font-size:11px;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ink-soft);
+  }
+
+  .empty-state .empty-figure{
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+
+  .empty-state p{
+    font-size:14px;
+    margin:0;
+    line-height:1.5;
+  }
+
+  .hint{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  @media (max-width:400px){
+    .result-figure{ font-size:36px; }
+    .stat-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="top">
+    <h1 class="brand">Savings Plan</h1>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-tab="calculator">Calculate</button>
+    <button data-tab="history">History</button>
+  </nav>
+
+  <!-- CALCULATOR -->
+  <section class="active" id="calculator">
+
+    <div class="card">
+      <div class="field">
+        <label for="salary">Monthly salary</label>
+        <div class="input-row">
+          <select id="currency" aria-label="Currency">
+            <option value="₹" selected>₹</option>
+            <option value="$">$</option>
+            <option value="€">€</option>
+            <option value="£">£</option>
+          </select>
+          <input type="number" id="salary" inputmode="decimal" placeholder="0" min="0" step="any">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="goal">Total savings goal</label>
+        <div class="input-row">
+          <span class="suffix" id="goalCurrency">₹</span>
+          <input type="number" id="goal" inputmode="decimal" placeholder="0" min="0" step="any" style="margin-left:6px;">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="months">Months to save over</label>
+        <div class="input-row">
+          <input type="number" id="months" inputmode="numeric" placeholder="0" min="1" step="1">
+          <span class="suffix">months</span>
+        </div>
+      </div>
+
+      <button class="calc-btn" id="calcBtn">Calculate my monthly saving</button>
+      <p class="hint" id="errorHint" style="display:none; color:var(--risky);"></p>
+    </div>
+
+    <div class="card result" id="resultCard">
+      <span class="result-status" id="statusBadge">
+        <span class="dot"></span>
+        <span id="statusText">Status</span>
+      </span>
+
+      <p class="result-figure" id="monthlyFigure">₹0</p>
+      <p class="result-caption">put aside every month, for <span id="monthsEcho">0</span> months</p>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-label">Share of salary</div>
+          <div class="stat-value" id="percentValue">0%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Left to live on</div>
+          <div class="stat-value" id="leftoverValue">₹0</div>
+        </div>
+      </div>
+
+      <p class="result-message" id="resultMessage"></p>
+
+      <button class="save-btn" id="saveBtn">Save this to history</button>
+    </div>
+
+  </section>
+
+  <!-- HISTORY -->
+  <section id="history">
+    <div class="history-header">
+      <p id="historyCount">Loading history…</p>
+      <button class="clear-btn" id="clearBtn" style="display:none;">Clear all</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('nav.tabs button');
+  const sections = { calculator: document.getElementById('calculator'), history: document.getElementById('history') };
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(sections).forEach(s => s.classList.remove('active'));
+      sections[btn.dataset.tab].classList.add('active');
+      if (btn.dataset.tab === 'history') renderHistory();
+    });
+  });
+
+  const currencySelect = document.getElementById('currency');
+  const goalCurrency = document.getElementById('goalCurrency');
+  currencySelect.addEventListener('change', () => {
+    goalCurrency.textContent = currencySelect.value;
+  });
+
+  const salaryInput = document.getElementById('salary');
+  const goalInput = document.getElementById('goal');
+  const monthsInput = document.getElementById('months');
+  const calcBtn = document.getElementById('calcBtn');
+  const errorHint = document.getElementById('errorHint');
+  const resultCard = document.getElementById('resultCard');
+  const saveBtn = document.getElementById('saveBtn');
+
+  let lastResult = null;
+
+  function formatMoney(value, symbol){
+    const rounded = Math.round(value * 100) / 100;
+    return symbol + rounded.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+
+  function classify(percent, monthlyExceedsSalary){
+    if (monthlyExceedsSalary) return 'risky';
+    if (percent <= 20) return 'comfortable';
+    if (percent <= 40) return 'tight';
+    return 'risky';
+  }
+
+  const styles = {
+    comfortable: {
+      badgeBg: 'rgba(151, 215, 128, 0.35)', badgeText: 'var(--comfortable-ink)', dot: 'var(--comfortable)',
+      label: 'Comfortable', msgBg: 'rgba(151, 215, 128, 0.25)', msgText: 'var(--comfortable-ink)',
+      message: (p) => `This works out to ${p}% of your salary — a comfortable pace. You should have plenty left for everyday spending.`
+    },
+    tight: {
+      badgeBg: 'rgba(239, 252, 95, 0.45)', badgeText: 'var(--tight-ink)', dot: '#D8CE2A',
+      label: 'Tight but doable', msgBg: 'rgba(239, 252, 95, 0.3)', msgText: 'var(--tight-ink)',
+      message: (p) => `That's ${p}% of your salary. It's manageable, but you'll want to watch your other spending closely.`
+    },
+    risky: {
+      badgeBg: 'rgba(232, 87, 74, 0.15)', badgeText: 'var(--risky)', dot: 'var(--risky)',
+      label: 'Not realistic', msgBg: 'rgba(232, 87, 74, 0.12)', msgText: '#8C2E24',
+      message: (p, exceeds) => exceeds
+        ? `Your goal needs more than your entire salary each month. Try more months, a smaller goal, or a higher income.`
+        : `That's ${p}% of your salary — too tight to sustain. Consider stretching the timeline or lowering the goal.`
+    }
+  };
+
+  calcBtn.addEventListener('click', () => {
+    const salary = parseFloat(salaryInput.value);
+    const goal = parseFloat(goalInput.value);
+    const months = parseInt(monthsInput.value, 10);
+    const symbol = currencySelect.value;
+
+    errorHint.style.display = 'none';
+
+    if (!salary || salary <= 0 || !goal || goal <= 0 || !months || months <= 0){
+      errorHint.textContent = 'Fill in all three fields with numbers above zero to calculate.';
+      errorHint.style.display = 'block';
+      resultCard.classList.remove('show');
+      return;
+    }
+
+    const monthly = goal / months;
+    const percent = (monthly / salary) * 100;
+    const exceeds = monthly > salary;
+    const leftover = salary - monthly;
+    const status = classify(percent, exceeds);
+    const style = styles[status];
+    const percentDisplay = Math.round(percent);
+
+    document.getElementById('statusBadge').style.background = style.badgeBg;
+    document.getElementById('statusBadge').style.color = style.badgeText;
+    document.getElementById('statusBadge').querySelector('.dot').style.background = style.dot;
+    document.getElementById('statusText').textContent = style.label;
+
+    document.getElementById('monthlyFigure').textContent = formatMoney(monthly, symbol);
+    document.getElementById('monthsEcho').textContent = months;
+    document.getElementById('percentValue').textContent = percentDisplay + '%';
+    document.getElementById('leftoverValue').textContent = formatMoney(Math.max(leftover, 0), symbol);
+
+    const msgEl = document.getElementById('resultMessage');
+    msgEl.textContent = style.message(percentDisplay, exceeds);
+    msgEl.style.background = style.msgBg;
+    msgEl.style.color = style.msgText;
+
+    resultCard.classList.add('show');
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save this to history';
+
+    lastResult = { salary, goal, months, symbol, monthly, percent: percentDisplay, status, leftover, exceeds };
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (!lastResult) return;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+    try {
+      const list = await loadHistoryList();
+      const entry = Object.assign({
+        id: 'entry_' + Date.now(),
+        date: new Date().toISOString()
+      }, lastResult);
+      list.unshift(entry);
+      await window.storage.set('savings-history', JSON.stringify(list), false);
+      saveBtn.textContent = 'Saved ✓';
+    } catch (e) {
+      console.error('Save failed', e);
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Could not save — try again';
+    }
+  });
+
+  async function loadHistoryList(){
+    try {
+      const result = await window.storage.get('savings-history', false);
+      if (!result || !result.value) return [];
+      const parsed = JSON.parse(result.value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  const historyList = document.getElementById('historyList');
+  const historyCount = document.getElementById('historyCount');
+  const clearBtn = document.getElementById('clearBtn');
+
+  const statusLabel = { comfortable: 'Comfortable', tight: 'Tight', risky: 'Not realistic' };
+  const statusColor = {
+    comfortable: { bg: 'rgba(151, 215, 128, 0.35)', text: 'var(--comfortable-ink)' },
+    tight: { bg: 'rgba(239, 252, 95, 0.45)', text: 'var(--tight-ink)' },
+    risky: { bg: 'rgba(232, 87, 74, 0.15)', text: 'var(--risky)' }
+  };
+
+  function formatDate(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  async function renderHistory(){
+    historyCount.textContent = 'Loading history…';
+    historyList.innerHTML = '';
+    clearBtn.style.display = 'none';
+
+    const list = await loadHistoryList();
+
+    if (list.length === 0){
+      historyCount.textContent = 'No saved calculations yet';
+      historyList.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-figure">Nothing here yet</p>
+          <p>Calculate a savings plan and tap "Save this to history" to keep track of it here.</p>
+        </div>`;
+      return;
+    }
+
+    historyCount.textContent = list.length + (list.length === 1 ? ' saved calculation' : ' saved calculations');
+    clearBtn.style.display = 'inline-block';
+
+    historyList.innerHTML = list.map(item => {
+      const c = statusColor[item.status] || statusColor.tight;
+      const label = statusLabel[item.status] || 'Tight';
+      const monthlyStr = formatMoney(item.monthly, item.symbol || '₹');
+      return `
+        <div class="history-item">
+          <div class="h-left">
+            <div class="h-date">${formatDate(item.date)}</div>
+            <div class="h-amount">${monthlyStr}<span style="font-family:'Inter',sans-serif; font-weight:500; font-size:13px; color:var(--ink-soft);"> / month</span></div>
+            <div class="h-sub">Goal ${formatMoney(item.goal, item.symbol || '₹')} over ${item.months} months</div>
+          </div>
+          <span class="h-tag" style="background:${c.bg}; color:${c.text};">${label}</span>
+        </div>`;
+    }).join('');
+  }
+
+  clearBtn.addEventListener('click', async () => {
+    if (!confirm('Clear all saved calculations? This cannot be undone.')) return;
+    try {
+      await window.storage.set('savings-history', JSON.stringify([]), false);
+      renderHistory();
+    } catch (e) {
+      console.error('Clear failed', e);
+    }
+  });
+
+  // Preload history count in background so the tab feels instant
+  renderHistory();
+})();
+</script>
+
+</body>
+</html>
